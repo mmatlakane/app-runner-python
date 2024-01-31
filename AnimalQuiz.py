@@ -1,25 +1,20 @@
-def check_guess(guess, answer):
-    global score
-    still_guessing = True
-    attempt = 0
-    while still_guessing and attempt < 3:
-        if guess.lower() == answer.lower():
-            print("Correct Answer")
-            score = score + 1
-            still_guessing = False
-        else:
-            if attempt < 2:
-                guess = input("Sorry Wrong Answer, try again")
-            attempt = attempt + 1
-    if attempt == 3:
-        print("The Correct answer is ",answer )
-    
-score = 0
-print("Guess the Animal")
-guess1 = input("Which bear lives at the North Pole? ")
-check_guess(guess1, "polar bear")
-guess2 = input("Which is the fastest land animal? ")
-check_guess(guess2, "Cheetah")
-guess3 = input("Which is the larget animal? ")
-check_guess(guess3, "Blue Whale")
-print("Your Score is "+ str(score))
+from wsgiref.simple_server import make_server
+from pyramid.config import Configurator
+from pyramid.response import Response
+import os
+
+def hello_world(request):
+    name = os.environ.get('NAME')
+    if name == None or len(name) == 0:
+        name = "world"
+    message = "Hello, " + name + "!\n"
+    return Response(message)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT"))
+    with Configurator() as config:
+        config.add_route('hello', '/')
+        config.add_view(hello_world, route_name='hello')
+        app = config.make_wsgi_app()
+    server = make_server('0.0.0.0', port, app)
+    server.serve_forever()
